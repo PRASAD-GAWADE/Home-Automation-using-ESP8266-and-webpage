@@ -1,0 +1,77 @@
+#include <ESP8266WiFi.h> 
+ 
+WiFiClient client ; 
+WiFiServer server(80) ; 
+#define S1 D4 
+#define S2 D5 
+ 
+void setup() { 
+  Serial.begin(9600); 
+ 
+  
+  
+  WiFi.softAP( "NodeMCU" , "123123123"); 
+  Serial.println(WiFi.softAPIP()) ; 
+  server.begin(); 
+ 
+  pinMode(D0,OUTPUT); 
+  pinMode(D1,OUTPUT); 
+  pinMode(D2,OUTPUT); 
+  pinMode(D3,OUTPUT); 
+  pinMode(D4,OUTPUT); 
+  pinMode(D5,OUTPUT); 
+  pinMode(D6,OUTPUT); 
+  pinMode(D7,OUTPUT); 
+  pinMode(D8,OUTPUT); 
+} 
+ 
+void loop() { 
+ 
+  digitalWrite(D2,LOW); 
+  digitalWrite(D3,LOW); 
+  digitalWrite(D4,LOW); 
+  digitalWrite(D5,LOW); 
+  digitalWrite(D6,LOW); 
+  digitalWrite(D7,LOW); 
+  digitalWrite(D8,LOW); 
+ 
+  client = server.available();  //Gets a client that is connected to the 
+server and has data available for reading.     
+  if (client == 1) 
+  {   
+    String request =  client.readStringUntil('\n'); 
+    Serial.println(request); 
+    request.trim(); 
+ 
+ if(request == "GET /on1 HTTP/1.1") 
+ 
+  { 
+    digitalWrite(D0,1); 
+  } 
+  if(request == "GET /off1 HTTP/1.1") 
+  { 
+    digitalWrite(D1,0); 
+  } 
+  if(request == "GET /on2 HTTP/1.1") 
+  { 
+    digitalWrite(D1,1); 
+  } 
+  if(request == "GET /off2 HTTP/1.1") 
+  { 
+    digitalWrite(D1,0); 
+  } 
+ } 
+ client.println("HTTP/1.1 200 OK"); 
+ client.println("Content-Type: text/html"); 
+ client.println(""); 
+ client.println("<!DOCKTYPE html>"); 
+ client.println("<html>"); 
+ client.println("<h1>control screen </h1>"); 
+ client.println("<br>"); 
+ client.println("<a href = \"/on1\"\"><button>S1_ON</button></a>"); 
+ client.println("<a href = \"/off1\"\"><button>S1_OFF</button></a>"); 
+ client.println("<a href = \"/on2\"\"><button>S2_ON</button></a>"); 
+ client.println("<a href = \"/off2\"\"><button>S2_OFF</button></a>"); 
+ client.println("</html>"); 
+  
+} 
